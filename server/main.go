@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"sync"
 
-	pb "streak/user" // Adjust to your actual module path
+	pb "streak/user"
 
 	"google.golang.org/grpc"
 )
@@ -22,14 +22,13 @@ type User struct {
 // UserStore to hold registered users
 type UserStore struct {
 	sync.RWMutex
-	users map[string]*User // map to store users by username
+	users map[string]*User
 }
 
 var userStore = &UserStore{
 	users: make(map[string]*User),
 }
 
-// Define the server struct
 type server struct {
 	pb.UnimplementedUserServiceServer
 }
@@ -59,12 +58,11 @@ func isValidPassword(password string) bool {
 	return true
 }
 
-// Implement CreateUser method
+// CreateUser Method
 func (s *server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	userStore.Lock()
 	defer userStore.Unlock()
 
-	// Check if user already exists
 	if _, exists := userStore.users[req.Username]; exists {
 		return &pb.CreateUserResponse{Success: false, Message: "User already exists"}, nil
 	}
@@ -72,7 +70,6 @@ func (s *server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 		return &pb.CreateUserResponse{Success: false, Message: "Password must be at least 8 characters long and include upper case letters, lower case letters, digits, and special characters"}, nil
 	}
 
-	// Add new user
 	userStore.users[req.Username] = &User{
 		Username: req.Username,
 		Password: req.Password,
@@ -81,7 +78,7 @@ func (s *server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 	return &pb.CreateUserResponse{Success: true, Message: "User created successfully"}, nil
 }
 
-// Implement LoginUser method
+// LoginUser method
 func (s *server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
 	userStore.Lock()
 	defer userStore.Unlock()
@@ -91,7 +88,6 @@ func (s *server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.L
 		return &pb.LoginUserResponse{Success: false, Message: "Invalid credentials"}, nil
 	}
 
-	// Check if user is already logged in
 	if user.LoggedIn {
 		return &pb.LoginUserResponse{Success: false, Message: "User already logged in"}, nil
 	}
@@ -101,7 +97,7 @@ func (s *server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.L
 	return &pb.LoginUserResponse{Success: true, Message: "User logged in successfully"}, nil
 }
 
-// Implement LogoutUser method
+// LogoutUser method
 func (s *server) LogoutUser(ctx context.Context, req *pb.LogoutUserRequest) (*pb.LogoutUserResponse, error) {
 	userStore.Lock()
 	defer userStore.Unlock()
@@ -111,7 +107,6 @@ func (s *server) LogoutUser(ctx context.Context, req *pb.LogoutUserRequest) (*pb
 		return &pb.LogoutUserResponse{Success: false, Message: "User is not logged in"}, nil
 	}
 
-	// Mark user as logged out
 	user.LoggedIn = false
 	return &pb.LogoutUserResponse{Success: true, Message: "User logged out successfully"}, nil
 }

@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"streak/user" // Adjust to your actual module path
+	"streak/user"
 
 	"google.golang.org/grpc"
 )
 
 func main() {
 	// Connect to the gRPC server
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	conn, err := grpc.NewClient("localhost:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}
@@ -86,7 +86,7 @@ func main() {
 					log.Fatalf("Error calling LogoutUser: %v", err)
 				}
 				log.Printf("LogoutUser Response: %v", logoutResponse)
-				loggedIn = false // Reset loggedIn status
+				loggedIn = false
 			}
 
 		default:
