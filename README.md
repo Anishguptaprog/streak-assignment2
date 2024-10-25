@@ -18,5 +18,8 @@ This is a gRPC-based User Management Service written in Go, providing functional
 - Go (Golang)
 - gRPC
 - Protocol Buffers (protobuf)
-- 
+
 ## Getting Started
+- Start the server by running the command "go run main.go". Make sure you are in the server directory.
+- Start the client side by running the command "go run client.go". Make sure you are in the client directory.
+- Now you can create user, login and logout, or create multiple users.
