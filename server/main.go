@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net"
+	"regexp"
 	"sync"
 
 	pb "streak/user" // Adjust to your actual module path
@@ -33,6 +34,31 @@ type server struct {
 	pb.UnimplementedUserServiceServer
 }
 
+func isValidPassword(password string) bool {
+
+	if len(password) < 8 {
+		return false
+	}
+
+	if matched, _ := regexp.MatchString(`[A-Z]`, password); !matched {
+		return false
+	}
+
+	if matched, _ := regexp.MatchString(`[a-z]`, password); !matched {
+		return false
+	}
+
+	if matched, _ := regexp.MatchString(`[0-9]`, password); !matched {
+		return false
+	}
+
+	if matched, _ := regexp.MatchString(`[!@#$%^&*(),.?":{}|<>]`, password); !matched {
+		return false
+	}
+
+	return true
+}
+
 // Implement CreateUser method
 func (s *server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	userStore.Lock()
@@ -41,6 +67,9 @@ func (s *server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 	// Check if user already exists
 	if _, exists := userStore.users[req.Username]; exists {
 		return &pb.CreateUserResponse{Success: false, Message: "User already exists"}, nil
+	}
+	if !isValidPassword(req.Password) {
+		return &pb.CreateUserResponse{Success: false, Message: "Password must be at least 8 characters long and include upper case letters, lower case letters, digits, and special characters"}, nil
 	}
 
 	// Add new user
