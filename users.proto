@@ -1,0 +1,38 @@
+package users;
+service Userservice{
+    rpc CreateUser
+    (CreateUserRequest) returns (CreateUserResponse);
+    rpc LoginUser
+    (LoginUserRequest) returns (LoginUserResponse);
+    rpc LogoutUser
+    (LogoutUserRequest) returns (LogoutUserResponse);
+    
+}
+
+message CreateUserRequest{
+    string username=anish;
+    string password=pass;
+}
+
+message CreateUserResponse{
+    bool success = 1;
+    string message = 2;
+}
+message LoginUserRequest{
+    string username=anish;
+    string password=pass;
+}
+
+message LoginUserResponse{
+    bool success = 1;
+    string message = 2;
+}
+message LogoutUserRequest{
+    string username=anish;
+    string password=pass;
+}
+
+message LogoutUserResponse{
+    bool success = 1;
+    string message = 2;
+}
